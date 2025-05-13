@@ -5,21 +5,23 @@ from cv2 import (
     destroyAllWindows,
     imshow,
     waitKey,
+    rectangle
 )
 import time
 
-from image_classifier import detect_objects, overlay_rectangles
+from smile_detector import SmileDetector
 
 INFO="INFO"
 WARNING="WARNING"
 ERROR="ERROR"
 
-class video_streamer():
+class VideoStreamer():
     def __init__(self):
         # https://docs.opencv.org/4.x/d8/dfe/classcv_1_1VideoCapture.html
         self.camera = VideoCapture(0)
         self.frame_width = int(self.camera.get(CAP_PROP_FRAME_WIDTH))
         self.frame_height = int(self.camera.get(CAP_PROP_FRAME_HEIGHT))
+        self.smile_detector = SmileDetector()
     
     def log(self, message, log_level=INFO):
         current_time=time.strftime('%H:%M:%S')
@@ -31,8 +33,8 @@ class video_streamer():
             self.check_interrupt()
             try:
                 frame = self.get_frame()
-                objects = detect_objects(frame)
-                processed_frame = overlay_rectangles(frame, objects)
+                smile_rectangles = self.smile_detector.find_smiles(frame)
+                processed_frame = overlay_rectangles(frame, smile_rectangles)
                 
                 # Display the resulting frame
                 imshow('frame', processed_frame)
@@ -68,7 +70,12 @@ class video_streamer():
         except Exception as e:
             self.log(f"cleanup failed due to {e}.")
 
+def overlay_rectangles(image, rectangles):
+        for (x, y, w, h) in rectangles: 
+            rectangle(image, (x, y), ((x + w), (y + h)), (0, 0, 255), 2) 
+        return image
+
 
 if __name__ == "__main__":
-    streamer = video_streamer()
+    streamer = VideoStreamer()
     streamer.stream()
