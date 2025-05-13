@@ -1,5 +1,7 @@
 """ TODOs:
 tune smile and face classifiers individually, it isnt quite right.
+
+play with object detection preprocessors
 """
 
 from cv2 import data as classifier_data
@@ -14,49 +16,49 @@ class SmileDetector():
     face_classifier = CascadeClassifier(classifier_data.haarcascades + "haarcascade_frontalface_default.xml")
     smile_classifier = CascadeClassifier(classifier_data.haarcascades + "haarcascade_smile.xml")
 
-    def detect_objects(self, image, classifier):
-        image_gray = cvtColor(image, COLOR_BGR2GRAY)
-        objects = classifier.detectMultiScale(image_gray, 1.3, 15)
-        return objects
-
-    def is_rectangle_in_rectangle(self, candidate_rect, bounding_rect):
-        c_left, c_bottom, c_width, c_height = candidate_rect
-        b_left, b_bottom, b_width, b_height = bounding_rect
-
-        c_right = c_left + c_width
-        c_top = c_bottom + c_height
-        b_right = b_left + b_width
-        b_top = b_bottom + b_height
+    def is_smile_in_face(self, candidate_smile, candidate_face):
+        """ Helper function to check if a candidate smile fits within the bounds of a face.
+        
+        args: 
+            candidate_rect: tuple in form (x, y, w, h)
+            bounding_rect: tuple in form (x, y, w, h)
+        return:
+            result: boolean
+        """
+        s_x, s_y, s_w, s_h = candidate_smile
+        f_x, f_y, f_w, f_h = candidate_face
 
         return (
-            c_left >= b_left and
-            c_bottom >= b_bottom and
-            c_right <= b_right and
-            c_top <= b_top
+            s_x >= f_x and
+            s_x + s_w  <= f_x + f_w and
+            s_y >= f_y and
+            s_y + s_h <= f_y + f_h
         )
 
     def find_smiles(self, image):
         """ Function to find and return the coordinates of all smiles in an image. To reduce false positives,
-        find the set of "faces" and "smiles" in image using haarcascad classifiers. Then filter for the set of
-        smiles fully contained within a face.
+        find the set of "faces" and "smiles" in an image using haarcascad classifiers. Then filter for the set
+        of smiles fully contained within a face.
 
         args:
             image: opencv image
         returns:
-            rectangles: list of tuples, where the tuple is in form (x, y, w, h)
-
+            rectangles: list of tuples in form (x, y, w, h)
         """
 
+        # Preprocess grayscale image.
+        image_gray = cvtColor(image, COLOR_BGR2GRAY)
+
         # Preprocess set of potential faces and smiles.
-        maybe_faces = self.detect_objects(image, self.face_classifier)
-        maybe_smiles = self.detect_objects(image, self.smile_classifier)
+        maybe_faces = self.face_classifier.detectMultiScale(image_gray, 1.3, 10)
+        maybe_smiles = self.smile_classifier.detectMultiScale(image_gray, 1.3, 14)
 
         # Define set of smiles found within the bounds of the set of faces.
         smiles=list()
         for smile in maybe_smiles:
             smile_in_face = False
             for face in maybe_faces:
-                if self.is_rectangle_in_rectangle(smile, face):
+                if self.is_smile_in_face(smile, face):
                     smile_in_face = True
             if smile_in_face:
                 smiles.append(smile)

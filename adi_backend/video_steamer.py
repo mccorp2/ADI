@@ -1,3 +1,10 @@
+""" To Do:
+remove object detection from VideoStreamer class. Allow classifiers to be applied to a stream.
+
+
+
+"""
+
 from cv2 import (
     CAP_PROP_FRAME_WIDTH,
     CAP_PROP_FRAME_HEIGHT,
@@ -27,7 +34,10 @@ class VideoStreamer():
         current_time=time.strftime('%H:%M:%S')
         print("{0} {1} video_streamer: {2}".format(log_level, current_time, message))
     
-    def stream(self):
+    def debug_stream(self):
+        """ Developer function to stream a video and optionally apply a classifier for
+        general debugging purposes. Useful for paramaterizing classifiers.
+        """
         self.log("Staring video capture.")
         while True:
             self.check_interrupt()
@@ -43,7 +53,11 @@ class VideoStreamer():
                 continue
 
     def get_frame(self):
-        # Grab camera frame
+        """ Helper function to return all valid frames.
+
+        return:
+            frame: opencv image
+        """
         status, frame = self.camera.read()
         if not status:
             raise Exception(
@@ -53,7 +67,9 @@ class VideoStreamer():
         return frame
 
     def check_interrupt(self):
-        # Press 'q' to exit
+        """ Allow case interupt for server
+
+        """
         if waitKey(1) & 0xFF == ord('q'):
             raise KeyboardInterrupt(
                 "Server recieved keyboard interrupt."
@@ -78,4 +94,4 @@ def overlay_rectangles(image, rectangles):
 
 if __name__ == "__main__":
     streamer = VideoStreamer()
-    streamer.stream()
+    streamer.debug_stream()
