@@ -8,6 +8,8 @@ from cv2 import (
 )
 import time
 
+from image_classifier import detect_objects, overlay_rectangles
+
 INFO="INFO"
 WARNING="WARNING"
 ERROR="ERROR"
@@ -29,12 +31,14 @@ class video_streamer():
             self.check_interrupt()
             try:
                 frame = self.get_frame()
+                objects = detect_objects(frame)
+                processed_frame = overlay_rectangles(frame, objects)
+                
+                # Display the resulting frame
+                imshow('frame', processed_frame)
             except Exception as err:
                 self.log(err, log_level=WARNING)
                 continue
-            
-            # Display the resulting frame
-            imshow('frame', frame)
 
     def get_frame(self):
         # Grab camera frame
@@ -68,5 +72,3 @@ class video_streamer():
 if __name__ == "__main__":
     streamer = video_streamer()
     streamer.stream()
-    
-    
