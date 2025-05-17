@@ -28,7 +28,6 @@ class VideoStreamer():
         self.camera = VideoCapture(0)
         self.frame_width = int(self.camera.get(CAP_PROP_FRAME_WIDTH))
         self.frame_height = int(self.camera.get(CAP_PROP_FRAME_HEIGHT))
-        self.smile_detector = SmileDetector()
     
     def log(self, message, log_level=INFO):
         current_time=time.strftime('%H:%M:%S')
@@ -43,8 +42,6 @@ class VideoStreamer():
             self.check_interrupt()
             try:
                 frame = self.get_frame()
-                smile_rectangles = self.smile_detector.find_smiles(frame)
-                processed_frame = overlay_rectangles(frame, smile_rectangles)
                 
                 # Display the resulting frame
                 imshow('frame', processed_frame)
@@ -54,9 +51,8 @@ class VideoStreamer():
 
     def get_frame(self):
         """ Helper function to return all valid frames.
-
-        return:
-            frame: opencv image
+        Return:
+        -frame: opencv image
         """
         status, frame = self.camera.read()
         if not status:
@@ -76,6 +72,12 @@ class VideoStreamer():
             )
 
     def __del__(self):
+        """ Cleanup function performed on server shutdonw.
+        Tasks: 
+        - Release camera from program.
+        - Close all windows opened.
+        """
+
         self.log("Starting cleanup.")
         try:
             self.log("Releasing camera.")
@@ -85,12 +87,6 @@ class VideoStreamer():
             destroyAllWindows()
         except Exception as e:
             self.log(f"cleanup failed due to {e}.")
-
-def overlay_rectangles(image, rectangles):
-        for (x, y, w, h) in rectangles: 
-            rectangle(image, (x, y), ((x + w), (y + h)), (0, 0, 255), 2) 
-        return image
-
 
 if __name__ == "__main__":
     streamer = VideoStreamer()
