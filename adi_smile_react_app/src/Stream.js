@@ -1,32 +1,32 @@
 import React, { useState, useEffect } from "react";
 
-function FetchFaces() {
-    const [paragraph, setParagraph] = useState('No smiles found.');
+function FetchImageData(isOn) {
+    const [metaData, setMetaData] = useState('{}');
 
-    const fetchParagraph = async () => {
+    const fetchMetaData = async () => {
       try {
         const response = await fetch('http://localhost:8081/smiles');
         const data = await response.text();
-        setParagraph(data);
+        setMetaData(data);
       } catch (error) {
-        setParagraph(error.message);
+        setMetaData(error.message);
       }
     }
 
   useEffect(() => {
-    fetchParagraph(); // Fetch text on component mount
+    fetchMetaData(); // Fetch text on component mount
 
     const intervalId = setInterval(() => {
-      fetchParagraph(); // Fetch text every 5 seconds
+      fetchMetaData(); // Fetch text every 5 seconds
     }, 100);
 
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
     return (
-        <>
-            <p>{paragraph}</p>
-        </>
+      <p>
+        {isOn ? metaData : '{}'}
+      </p>
     );
 }
 
@@ -34,12 +34,14 @@ function Cam() {
     let initialState = false;
     let cameraSource = "http://localhost:8081/video_feed";
     const [isOn, setIsOn] = useState(initialState);
-    const [streamSource, setStreamSource] = useState(initialState ? cameraSource : null)
+    const [streamSource, setStreamSource] = useState(initialState ? cameraSource : null);
 
     const handleToggle = () => {
       setIsOn(!isOn);
       setStreamSource(isOn ? null : cameraSource)
     };
+
+    const metaData = FetchImageData(isOn);
   
     return (
     <div>
@@ -48,23 +50,23 @@ function Cam() {
             src={streamSource}
             alt="Video"
         />
-        <button 
-            onClick={handleToggle}
-            aria-pressed={isOn}
-            style={{
-            backgroundColor: isOn ? 'green' : 'gray',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            cursor: 'pointer',
-            }}
-        >
-        {isOn ? 'Face Detection: On' : 'Face Detection: Off'}
-        </button>
+        <div>
+          <button 
+              onClick={handleToggle}
+              aria-pressed={isOn}
+              style={{
+              backgroundColor: isOn ? 'green' : 'gray',
+              }}
+          >
+          {isOn ? 'Face Detection: On' : 'Face Detection: Off'}
+          </button>
+          {metaData}
+          
+        </div>
     </div>
     );
   }
 
   
   
-  export {Cam, FetchFaces};
+  export {Cam, FetchImageData};

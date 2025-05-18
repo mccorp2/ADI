@@ -1,4 +1,4 @@
-import {Cam, FetchFaces} from './Stream';
+import {Cam} from './Stream';
 import './App.css';
 
 function App() {
@@ -6,9 +6,6 @@ function App() {
     <div>
       <div className="App">
         <Cam />
-      </div>
-      <div className="App">
-        <FetchFaces />
       </div>
     </div>
   );
