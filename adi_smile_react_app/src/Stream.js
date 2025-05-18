@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 
 function FetchImageData(isOn) {
+    /* React function to grab image metadata from a local host.
+    Args:
+    - isOn: Boolean react hook defining if the video capture is active.
+
+    Return:
+    - metaData: expects json as text containing all smiles and their coordinates.
+    */
     const [metaData, setMetaData] = useState('{}');
 
     const fetchMetaData = async () => {
@@ -14,10 +21,10 @@ function FetchImageData(isOn) {
     }
 
   useEffect(() => {
-    fetchMetaData(); // Fetch text on component mount
+    fetchMetaData(); // Fetch image metadata from localhost
 
     const intervalId = setInterval(() => {
-      fetchMetaData(); // Fetch text every 5 seconds
+      fetchMetaData(); // Referesh cycle in ms.
     }, 100);
 
     return () => clearInterval(intervalId); // Cleanup on unmount
@@ -30,7 +37,15 @@ function FetchImageData(isOn) {
     );
 }
 
-function Cam() {
+function FacialStream() {
+    /* React function to stream video from a python backend. Grabs jpegs as frames from
+    a local host.
+
+    Return:
+    - Streamed image
+    - Enable button
+    - Smiles metadata
+     */
     let initialState = false;
     let cameraSource = "http://localhost:8081/video_feed";
     const [isOn, setIsOn] = useState(initialState);
@@ -69,4 +84,4 @@ function Cam() {
 
   
   
-  export {Cam, FetchImageData};
+  export {FacialStream, FetchImageData};

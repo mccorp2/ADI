@@ -1,9 +1,3 @@
-""" TODOs:
-tune smile and face classifiers individually, it isnt quite right.
-
-play with object detection preprocessors
-"""
-
 from math import sqrt
 from cv2 import data as classifier_data
 from cv2 import (
@@ -14,6 +8,7 @@ from cv2 import (
 )
 
 class SmileDetector():
+    # https://github.com/opencv/opencv/tree/master/data/haarcascades
     face_classifier = CascadeClassifier(classifier_data.haarcascades + "haarcascade_frontalface_default.xml")
     smile_classifier = CascadeClassifier(classifier_data.haarcascades + "haarcascade_smile.xml")
     smiles=[]

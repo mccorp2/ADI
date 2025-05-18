@@ -1,10 +1,3 @@
-""" To Do:
-remove object detection from VideoStreamer class. Allow classifiers to be applied to a stream.
-
-
-
-"""
-
 from cv2 import (
     CAP_PROP_FRAME_WIDTH,
     CAP_PROP_FRAME_HEIGHT,

@@ -23,6 +23,7 @@ detected_smiles = {
 }
 
 # Initialize flask app.
+# https://github.com/corydolphin/flask-cors
 app = Flask(__name__)
 CORS(app)
 
@@ -56,7 +57,7 @@ def proccess_stream(streamer):
         smiles_in_frame = smile_detector.get_smile_coords()
         if len(smiles_in_frame) > 0:
             detected_smiles["smiles"][str(time.time())] = process_coords(smiles_in_frame)
-
+        # https://wiki.tcl-lang.org/page/multipart%2Fx-mixed-replace
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n')
 
@@ -64,6 +65,7 @@ def proccess_stream(streamer):
 def video_feed():
     """ Endpoint to grab a stream of jpegs bound as frames.
     """
+    # https://wiki.tcl-lang.org/page/multipart%2Fx-mixed-replace
     return Response(proccess_stream(streamer), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/smiles')
@@ -96,4 +98,4 @@ def save_detected_faces(sig, frame):
 signal.signal(signal.SIGINT, save_detected_faces)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8081, threaded=True, use_reloader=False)
+    app.run(port=8081, threaded=True, use_reloader=False)

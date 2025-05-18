@@ -1,11 +1,14 @@
-import {Cam} from './Stream';
+import {FacialStream} from './Stream';
 import './App.css';
 
 function App() {
+  /* Barebones app to display camera data. This video and data are
+  published by a flask server defined in adi_backend.
+   */
   return (
     <div>
       <div className="App">
-        <Cam />
+        <FacialStream />
       </div>
     </div>
   );

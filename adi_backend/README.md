@@ -25,3 +25,4 @@ frontend and backend to these endpoints
 * Add static typing with mypy
 * Add linter with pylint
 * Enforce linting and static typing with pre-commit on git.
+* Publish FPS metric and setup react to dynamically tune its interval from FPS.
