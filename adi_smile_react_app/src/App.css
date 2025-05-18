@@ -1,0 +1,19 @@
+:root {
+  --video_width: 50vw 
+}
+
+.App {
+  text-align: center;
+}
+
+.Video-feed {
+  width: var(--video_width);
+  float: left;
+  height: auto;
+}
+
+.Video-text {
+  width: var(--video_width);
+  height: auto;
+}
+
