@@ -22,16 +22,19 @@ INFO="INFO"
 WARNING="WARNING"
 ERROR="ERROR"
 
+def log(process, message, log_level=INFO):
+    current_time=time.strftime('%H:%M:%S')
+    print("{0} {1} {2}: {3}".format(log_level, current_time, process, message))
+
 class VideoStreamer():
     def __init__(self):
         # https://docs.opencv.org/4.x/d8/dfe/classcv_1_1VideoCapture.html
         self.camera = VideoCapture(0)
         self.frame_width = int(self.camera.get(CAP_PROP_FRAME_WIDTH))
         self.frame_height = int(self.camera.get(CAP_PROP_FRAME_HEIGHT))
-    
+
     def log(self, message, log_level=INFO):
-        current_time=time.strftime('%H:%M:%S')
-        print("{0} {1} video_streamer: {2}".format(log_level, current_time, message))
+        log("video_streamer", message, log_level)
 
     def get_frame(self):
         """ Helper function to return all valid frames.
