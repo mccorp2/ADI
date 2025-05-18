@@ -32,28 +32,13 @@ class VideoStreamer():
     def log(self, message, log_level=INFO):
         current_time=time.strftime('%H:%M:%S')
         print("{0} {1} video_streamer: {2}".format(log_level, current_time, message))
-    
-    def debug_stream(self):
-        """ Developer function to stream a video and optionally apply a classifier for
-        general debugging purposes. Useful for paramaterizing classifiers.
-        """
-        self.log("Staring video capture.")
-        while True:
-            self.check_interrupt()
-            try:
-                frame = self.get_frame()
-                
-                # Display the resulting frame
-                imshow('frame', processed_frame)
-            except Exception as err:
-                self.log(err, log_level=WARNING)
-                continue
 
     def get_frame(self):
         """ Helper function to return all valid frames.
         Return:
         -frame: opencv image
         """
+
         status, frame = self.camera.read()
         if not status:
             raise Exception(
@@ -64,8 +49,8 @@ class VideoStreamer():
 
     def check_interrupt(self):
         """ Allow case interupt for server
-
         """
+
         if waitKey(1) & 0xFF == ord('q'):
             raise KeyboardInterrupt(
                 "Server recieved keyboard interrupt."
@@ -88,6 +73,28 @@ class VideoStreamer():
         except Exception as e:
             self.log(f"cleanup failed due to {e}.")
 
-if __name__ == "__main__":
+def debug_classifiers():
+    """ Developer function to stream a video and optionally apply a classifier for
+    general debugging purposes. Useful for paramaterizing classifiers.
+    """
+
     streamer = VideoStreamer()
-    streamer.debug_stream()
+    streamer.log("Staring video capture.")
+
+    smile_detector = SmileDetector()
+
+    while True:
+        streamer.check_interrupt()
+        try:
+            frame = streamer.get_frame()
+            processed_frame = smile_detector.process_frame(frame)
+            
+            # Display the resulting frame
+            imshow('frame', processed_frame)
+        except Exception as err:
+            streamer.log(err, log_level=WARNING)
+            continue
+
+
+if __name__ == "__main__":
+    debug_classifiers()
