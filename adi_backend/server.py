@@ -91,7 +91,6 @@ def save_detected_faces(sig, frame):
     log("flask_server", f"Saving detected smiles to {file_name}")
     with open(file_name, "w") as file:
         json.dump(detected_smiles, file, indent=4)
-    log("flask_server", f"{sig}, {frame}")
     exit(0)
 
 signal.signal(signal.SIGINT, save_detected_faces)
